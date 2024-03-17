@@ -1,0 +1,34 @@
+import requests
+
+def get_crypto_prices(api_key, symbols):
+    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
+    parameters = {
+        'symbol': ','.join(symbols),
+        'convert': 'USD'
+    }
+    headers = {
+        'Accepts': 'application/json',
+        'X-CMC_PRO_API_KEY': api_key,
+    }
+
+    response = requests.get(url, headers=headers, params=parameters)
+    data = response.json()
+
+    prices = {}
+    for symbol in symbols:
+
+        if symbol in data['data']:
+            prices[symbol] = data['data'][symbol]['quote']['USD']['price']
+        else:
+            prices[symbol] = 'Not Found'
+
+    return prices
+
+api_key = '269e9fda-d210-4d3a-b109-0223f7163fa3'
+
+symbols = ['BTC', 'WLD', 'RMV', 'AVAX', 'XRP', 'ONDO']
+
+crypto_prices = get_crypto_prices(api_key, symbols)
+
+for symbol, price in crypto_prices.items():
+    print(f"The live price of {symbol} is: ${price if price != 'Not Found' else 'Not Available'}")
